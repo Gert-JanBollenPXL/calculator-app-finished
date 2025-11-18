@@ -25,7 +25,7 @@ jobs:
         run: npm install && npm run zip --if-present
 
       - name: Test the code
-        run: npm test -- --coverage
+        run: npm test -- --coverage --json --outputFile=test-results.json
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -39,6 +39,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           coverage-file: ./coverage/clover.xml
           working-directory: ./
+
+      - name: Extract test results
+        id: tests
+        run: |
+          PASSED=$(jq '.numPassedTests' test-results.json)
+          FAILED=$(jq '.numFailedTests' test-results.json)
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
 
       - name: Send status to Discord for main branch push
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -62,4 +70,5 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             **CI Build Status:** ${{ job.status }}
-            **Coverage:** $(cat ./coverage/coverage-summary.txt | grep -i lines | awk '{print $4}') 
+            **Tests Passed:** ${{ steps.tests.outputs.passed }}
+            **Tests Failed:** ${{ steps.tests.outputs.failed }}
