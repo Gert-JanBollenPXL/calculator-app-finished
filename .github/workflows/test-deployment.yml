@@ -31,5 +31,5 @@ jobs:
         run: |
           docker run -d \
             --name calculator-app-finished \
-            -p 8080:8080 \
+            -p 3000:3000 \
             ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
