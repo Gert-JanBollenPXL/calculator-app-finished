@@ -1,4 +1,4 @@
-name: Deploy_Test_ENV
+name: Deploy_Test_PROD
 
 on:
   workflow_dispatch:
@@ -6,11 +6,19 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.1
+        with: 
+         ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Connect to EC2
+        run: ssh -o StrictHostKeyChecking=no user@${{ secrets.PROD_IP}} << 'EOF'
 
       - name: Pull latest Docker image
         run: |
@@ -29,5 +37,5 @@ jobs:
         run: |
           docker run -d \
             --name calculator-app-finished \
-            -p 3000:3000 \
+            -p 80:3000 \
             ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
