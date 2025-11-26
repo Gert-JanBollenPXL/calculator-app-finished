@@ -18,7 +18,7 @@ jobs:
          ssh-private-key: ${{ secrets.SSH_KEY }}
 
       - name: Connect to EC2
-        run: ssh -o StrictHostKeyChecking=no user@${{ secrets.PROD_IP}}
+        run: ssh -o StrictHostKeyChecking=no -i user@${{ secrets.PROD_IP}}
 
       - name: Pull latest Docker image
         run: |
