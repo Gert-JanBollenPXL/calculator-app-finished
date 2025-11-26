@@ -14,7 +14,7 @@ jobs:
 
       - name: Pull latest Docker image
         run: |
-          docker ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
+          docker pull ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
 
       - name: Stop running container (if it exists)
         run: |
