@@ -1,0 +1,35 @@
+name: Deploy_Test_ENV
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull latest Docker image
+        run: |
+          docker ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
+
+      - name: Stop running container (if it exists)
+        run: |
+          if [ "$(docker ps -q -f name=calculator-app-finished)" ]; then
+            echo "Stopping running container..."
+            docker stop calculator-app-finished
+          fi
+          if [ "$(docker ps -aq -f name=calculator-app-finished)" ]; then
+            echo "Removing existing container..."
+            docker rm calculator-app-finished
+          fi
+
+      - name: Run latest container
+        run: |
+          docker run -d \
+            --name calculator-app-finished \
+            -p 8080:8080 \
+            ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
