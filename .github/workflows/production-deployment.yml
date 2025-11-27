@@ -12,30 +12,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Execute remote SSH commands using SSH key
+      - name: Deploy to Production Server via SSH
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.PROD_IP }}
-          username: "user"
+          username: user
           key: ${{ secrets.SSH_KEY }}
           port: 22
+          script: |
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
 
-      - name: Pull latest Docker image
-        run: |
-          docker pull ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
+            docker stop calculator-app-finished || true
 
-      - name: Stop running container (if it exists)
-        run: |
-          if [ "$(docker ps -q -f name=calculator-app-finished)" ]; then
-            docker stop calculator-app-finished
-          fi
-          if [ "$(docker ps -aq -f name=calculator-app-finished)" ]; then
-            docker rm calculator-app-finished
-          fi
+            docker rm calculator-app-finished || true
 
-      - name: Run latest container
-        run: |
-          docker run -d \
-            --name calculator-app-finished \
-            -p 80:3000 \
-            ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
+            docker run -d --name calculator-app-finished -p 80:3000 ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
