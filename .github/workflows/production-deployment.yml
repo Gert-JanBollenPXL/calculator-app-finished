@@ -20,10 +20,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
+            sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
 
-            docker stop calculator-app-finished || true
+            sudo docker stop calculator-app-finished || true
 
-            docker rm calculator-app-finished || true
+            sudo docker rm calculator-app-finished || true
 
-            docker run -d --name calculator-app-finished -p 80:3000 ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
+            sudo docker run -d --name calculator-app-finished -p 80:3000 ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
