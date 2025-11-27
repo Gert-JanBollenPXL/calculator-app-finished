@@ -18,16 +18,9 @@ jobs:
 
       - name: Stop running container (if it exists)
         run: |
-          if [ "$(docker ps -q -f name=calculator-app-finished)" ]; then
-            docker stop calculator-app-finished
-          fi
-          if [ "$(docker ps -aq -f name=calculator-app-finished)" ]; then
-            docker rm calculator-app-finished
-          fi
+            sudo docker stop calculator-app-finished || true
+            sudo docker rm calculator-app-finished || true
 
       - name: Run latest container
         run: |
-          docker run -d \
-            --name calculator-app-finished \
-            -p 3000:3000 \
-            ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
+          docker run -d --name calculator-app-finished -p 3000:3000 ${{ vars.DOCKERHUB_USERNAME }}/calculator-app-finished:latest
