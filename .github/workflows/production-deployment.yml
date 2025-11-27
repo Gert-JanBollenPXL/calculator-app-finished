@@ -12,13 +12,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.9.1
-        with: 
-         ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - name: Connect to EC2
-        run: ssh user@${{ secrets.PROD_IP}} -i ${{ secrets.SSH_KEY}}
+      - name: Execute remote SSH commands using SSH key
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PROD_IP }}
+          username: user
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
 
       - name: Pull latest Docker image
         run: |
